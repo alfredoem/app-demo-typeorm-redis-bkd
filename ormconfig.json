@@ -1,0 +1,17 @@
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "root",
+  "password": "My5qlP@ssword",
+  "database": "db_results3",
+  "entities": ["dist/entity/**/*.js"],
+  "synchronize": true,
+  "cache": {
+    "type": "redis",
+    "options": {
+      "host": "localhost",
+      "port": 6379
+    }
+  }
+}

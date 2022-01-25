@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
+const express_1 = __importDefault(require("express"));
+const morgan_1 = __importDefault(require("morgan"));
+const cors_1 = __importDefault(require("cors"));
+const typeorm_1 = require("typeorm");
+const results_routes_1 = __importDefault(require("./routes/results.routes"));
+const colors = require('colors');
+const responseTime = require('response-time');
+const app = (0, express_1.default)();
+(0, typeorm_1.createConnection)();
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
+app.use((0, morgan_1.default)('dev'));
+app.use(responseTime());
+app.use(results_routes_1.default);
+app.listen(process.env.PORT);
+console.log(colors.bold.red(`Server running on port `), process.env.PORT);
