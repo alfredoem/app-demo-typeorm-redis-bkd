@@ -38,32 +38,20 @@ export const getAll = async ( req: Request, res: Response ): Promise<Response> =
     const client = createClient();
     await client.connect();
 
-    const now = new Date();
-    const dte = now.getMinutes().toString()
-
-    await client.get(dte).then(async resp => {
+    await client.get('results').then(async resp => {
         if (resp) {
-
-            // console.log("FR REDIS => ", resp);
-            // console.log(colors.brightRed('FR REDIS => '), JSON.parse(resp));
-
             console.log(colors.brightRed('FR REDIS ... '));
-
-            // return res.json(JSON.parse(resp));
             rsts = JSON.parse(resp);
         } else {
             const data = await getRepository(Results).find();
-
-            await client.set(dte, JSON.stringify(data)).then(resp => {
-
-                // console.log("SV REDIS => ", resp);
-                // console.log(colors.brightMagenta('SV REDIS => '), resp);
-                // console.log(colors.brightBlue('FR MYSQL => '), data);
-
+            await client.set('results', JSON.stringify(data)).then(async resp => {
                 console.log(colors.brightMagenta('SV REDIS ... '));
                 console.log(colors.brightBlue('FR MYSQL ... '));
 
-                // return res.json(rsDa);
+                await client.EXPIRE('results', 20).then(resp => {
+                    console.log(colors.brightMagenta('TTL ADDED ... '));
+                }, err => console.log("error", err));
+
                 rsts = data
             }, err => console.log("error", err));
         }

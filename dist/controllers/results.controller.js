@@ -40,27 +40,21 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let rsts;
     const client = (0, redis_1.createClient)();
     yield client.connect();
-    const now = new Date();
-    const dte = now.getMinutes().toString();
-    yield client.get(dte).then((resp) => __awaiter(void 0, void 0, void 0, function* () {
+    yield client.get('results').then((resp) => __awaiter(void 0, void 0, void 0, function* () {
         if (resp) {
-            // console.log("FR REDIS => ", resp);
-            // console.log(colors.brightRed('FR REDIS => '), JSON.parse(resp));
             console.log(colors.brightRed('FR REDIS ... '));
-            // return res.json(JSON.parse(resp));
             rsts = JSON.parse(resp);
         }
         else {
             const data = yield (0, typeorm_1.getRepository)(Results_1.Results).find();
-            yield client.set(dte, JSON.stringify(data)).then(resp => {
-                // console.log("SV REDIS => ", resp);
-                // console.log(colors.brightMagenta('SV REDIS => '), resp);
-                // console.log(colors.brightBlue('FR MYSQL => '), data);
+            yield client.set('results', JSON.stringify(data)).then((resp) => __awaiter(void 0, void 0, void 0, function* () {
                 console.log(colors.brightMagenta('SV REDIS ... '));
                 console.log(colors.brightBlue('FR MYSQL ... '));
-                // return res.json(rsDa);
+                yield client.EXPIRE('results', 20).then(resp => {
+                    console.log(colors.brightMagenta('TTL ADDED ... '));
+                }, err => console.log("error", err));
                 rsts = data;
-            }, err => console.log("error", err));
+            }), err => console.log("error", err));
         }
     }), err => console.log("error", err));
     return res.json(rsts);
