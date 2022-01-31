@@ -1,0 +1,19 @@
+version: "2.4"
+
+services:
+  db-lab:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: db_results3
+      MYSQL_ROOT_PASSWORD: My5qlP@ssword
+    volumes:
+      - ./data:/docker-entrypoint-initdb.d
+
+  redis-lab:
+    image: k8s.gcr.io/redis:e2e
+    ports:
+      - 6379:6379
